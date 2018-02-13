@@ -1,15 +1,13 @@
 import { NgModule } from '@angular/core';
-import { MatButtonModule, MatIconModule, MatFormFieldModule, MatInputModule } from '@angular/material';
+import { MatButtonModule,MatNativeDateModule, MatDatepickerModule, MatIconModule, MatFormFieldModule, MatInputModule } from '@angular/material';
 @NgModule({
     imports: [
-        MatButtonModule,
+        MatButtonModule,MatDatepickerModule,MatNativeDateModule,
         MatIconModule, MatFormFieldModule, MatInputModule
-
     ],
     exports: [
-        MatButtonModule,
+        MatButtonModule,MatDatepickerModule,MatNativeDateModule,
         MatIconModule, MatFormFieldModule, MatInputModule
-
     ]
 })
 export class MaterialModule {}
