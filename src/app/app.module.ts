@@ -16,31 +16,35 @@ import { WelcomeComponent } from './welcome/welcome.component';
 import { AppRoutingModule } from './app-routing.module';
 import { HeaderComponent } from './navigation/header/header.component';
 import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.component';
+import { StopTrainingComponent } from './training/current-training/stop-training.component';
 
 @NgModule({
-  declarations: [
-    AppComponent,
-    LoginComponent,
-    SignupComponent,
-    TrainingComponent,
-    CurrentTrainingComponent,
-    NewTrainingComponent,
-    PastTrainingComponent,
-    WelcomeComponent,
-    HeaderComponent,
-    SidenavListComponent
-  ],
-  imports: [
-      BrowserModule,
-      BrowserAnimationsModule,
-      MaterialModule,
-	  FlexLayoutModule,
-      AppRoutingModule,
-      FormsModule,
-      ReactiveFormsModule
+    declarations: [
+        AppComponent,
+        LoginComponent,
+        SignupComponent,
+        TrainingComponent,
+        CurrentTrainingComponent,
+        NewTrainingComponent,
+        PastTrainingComponent,
+        WelcomeComponent,
+        HeaderComponent,
+        SidenavListComponent,
+        StopTrainingComponent
+    ],
+    imports: [
+        BrowserModule,
+        BrowserAnimationsModule,
+        MaterialModule,
+        FlexLayoutModule,
+        AppRoutingModule,
+        FormsModule,
+        ReactiveFormsModule
 
-  ],
-  providers: [],
-  bootstrap: [AppComponent]
+    ],
+    providers: [],
+    bootstrap: [AppComponent],
+    entryComponents: [StopTrainingComponent]
+
 })
 export class AppModule { }
