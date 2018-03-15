@@ -14,6 +14,7 @@ import {
     MatToolbarModule,
     MatListModule,
     MatDialogModule,
+    MatTableModule,
     MatInputModule
 } from '@angular/material';
 @NgModule({
@@ -30,6 +31,7 @@ import {
         MatDialogModule,
         MatToolbarModule,
         MatSidenavModule,
+        MatTableModule,
         MatCardModule,
         MatProgressSpinnerModule,
         MatListModule,
@@ -46,6 +48,7 @@ import {
         MatFormFieldModule,
         MatSidenavModule,
         MatToolbarModule,
+        MatTableModule,
         MatListModule,
         MatCardModule,
         MatProgressSpinnerModule,
