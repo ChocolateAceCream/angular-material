@@ -19,6 +19,7 @@ import { SidenavListComponent } from './navigation/sidenav-list/sidenav-list.com
 import { StopTrainingComponent } from './training/current-training/stop-training.component';
 import { AuthService } from './auth/auth.service';
 import { TrainingService } from './training/training.service';
+import { HttpClientModule } from '@angular/common/http';
 
 @NgModule({
     declarations: [
@@ -41,6 +42,7 @@ import { TrainingService } from './training/training.service';
         FlexLayoutModule,
         AppRoutingModule,
         FormsModule,
+        HttpClientModule,
         ReactiveFormsModule
 
     ],

@@ -4,35 +4,77 @@ import { Router } from '@angular/router';
 import { Subject } from 'rxjs/Subject';
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import 'rxjs/add/operator/toPromise';
 
 //inject route service
+
+interface AccessToken {
+    token: string;
+}
 @Injectable()
 
 export class AuthService {
     authChange = new Subject<boolean>();
     private user: User;
 
-    constructor(private router: Router) {}
+    constructor(private router: Router, private http: HttpClient) {}
 
     registerUser(authData: AuthData) {
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin':'*'
+            })
+        };
+
         this.user = {
             email: authData.email,
-            userId: Math.round(Math.random() * 10000).toString()
+            password: authData.password
         };
-        this.authSuccessfully();
+        this.http.post<AccessToken>(
+            `http://192.168.1.11:3000/signup.json`,
+            this.user,
+            httpOptions
+        ).toPromise()
+        .then(result => {
+            console.log(result.token);
+            this.authSuccessfully(result.token);
+        })
+        .catch(error => {
+            console.log(error);
+        });
     }
 
     login(authData: AuthData) {
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin':'*'
+            })
+        };
         this.user = {
             email: authData.email,
-            userId: Math.round(Math.random() * 10000).toString()
+            password: authData.password
         };
-        this.authSuccessfully();
+        this.http.post<AccessToken>(
+            `http://192.168.1.11:3000/login.json`,
+            this.user,
+            httpOptions
+        ).toPromise()
+        .then(result => {
+            console.log(result.token);
+            this.authSuccessfully(result.token);
+        })
+        .catch(error => {
+            console.log(error);
+        });
     }
 
     logout() {
         this.user = null;
         this.authChange.next(false);
+        localStorage.removeItem('accessToken');
         this.router.navigate(['/login']);
     }
 
@@ -41,10 +83,11 @@ export class AuthService {
     }
 
     isAuth() {
-        return this.user != null;
+        return <string>localStorage.getItem('accessToken') != null;
     }
 
-    private authSuccessfully() {
+    private authSuccessfully(token: string) {
+        localStorage.setItem('accessToken', token);
         this.authChange.next(true);
         this.router.navigate(['/training']);
     }
