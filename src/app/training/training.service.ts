@@ -1,7 +1,15 @@
 import { Exercise } from './exercise.model';
 import { Subject } from'rxjs/Subject';
+import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { Injectable, OnInit } from '@angular/core';
+
+import 'rxjs/add/operator/toPromise';
+
+@Injectable()
 export class TrainingService {
     exerciseChanged = new Subject<Exercise>();
+    finishedExercisesChanged = new Subject<Exercise[]>();
+    token: string;
     //this subject will hold a payload type of Exercise
     private availableExercises: Exercise[] = [
         { id: 'crunches', name: 'Crunches', duration: 30, calories: 8},
@@ -16,7 +24,13 @@ export class TrainingService {
     private runningExercise: Exercise;
 
     //store the completed exercise
-    private exercises: Exercise[] = [];
+    exercises: Exercise[] = [];
+
+    constructor(private http: HttpClient){}
+
+    ngOnInit() {
+        this.getDataFromDatabase();
+    }
 
     getAvailableExercises() {
         return this.availableExercises.slice();
@@ -28,7 +42,7 @@ export class TrainingService {
     }
 
     completeExercise() {
-        this.exercises.push({
+        this.addDataToDatabase({
             ...this.runningExercise,
             date: new Date(),
             state : "completed"
@@ -38,7 +52,7 @@ export class TrainingService {
     }
 
     cancelExercise(progress: number) {
-        this.exercises.push({
+        this.addDataToDatabase({
             ...this.runningExercise,
             duration: this.runningExercise.duration * (progress / 100),
             calories: this.runningExercise.calories * (progress / 100),
@@ -56,5 +70,46 @@ export class TrainingService {
 
     getCompletedOrCancelledExercises() {
         return this.exercises.slice();
+    }
+
+    private addDataToDatabase(exercise: Exercise) {
+        this.token = localStorage.getItem('accessToken');
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin':'*',
+                'Authorization': `Bearer ${this.token}`
+            })
+        };
+        this.http.post(
+            `http://192.168.1.11:3000/exercises/create.json`,
+            exercise,
+            httpOptions
+        ).toPromise()
+        .catch(error => {
+            console.log(error);
+        });
+    }
+
+    getDataFromDatabase() {
+        this.token = localStorage.getItem('accessToken');
+        const httpOptions = {
+            headers: new HttpHeaders({
+                'Content-Type': 'application/json',
+                'Access-Control-Allow-Origin':'*',
+                'Authorization': `Bearer ${this.token}`
+            })
+        };
+        this.http.get<Exercise[]>(
+            `http://192.168.1.11:3000/exercises/index.json`,
+            httpOptions
+        ).toPromise()
+        .then((result: Exercise[]) => {
+            this.finishedExercisesChanged.next(result);
+            this.exercises = result;
+        })
+        .catch(error => {
+            console.log(error);
+        });
     }
 }
