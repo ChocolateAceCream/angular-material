@@ -20,6 +20,7 @@ import { StopTrainingComponent } from './training/current-training/stop-training
 import { AuthService } from './auth/auth.service';
 import { TrainingService } from './training/training.service';
 import { HttpClientModule } from '@angular/common/http';
+import { UIService } from './shared/ui.service';
 
 @NgModule({
     declarations: [
@@ -46,7 +47,7 @@ import { HttpClientModule } from '@angular/common/http';
         ReactiveFormsModule
 
     ],
-    providers: [AuthService, TrainingService],
+    providers: [AuthService, TrainingService, UIService],
     bootstrap: [AppComponent],
     entryComponents: [StopTrainingComponent]
 

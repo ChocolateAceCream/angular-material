@@ -2,7 +2,6 @@ import { Component, OnInit, ViewChild, AfterViewInit, OnDestroy } from '@angular
 import { MatTableDataSource, MatSort, MatPaginator } from '@angular/material';
 import { Exercise } from '../exercise.model';
 import { TrainingService } from '../training.service';
-
 import { Subscription } from 'rxjs';
 
 @Component({
@@ -21,13 +20,13 @@ export class PastTrainingComponent implements OnInit, AfterViewInit {
     constructor(private trainingService: TrainingService) { }
 
     ngOnInit() {
+        console.log('past');
         this.exChangedSubscription = this.trainingService.finishedExercisesChanged.subscribe(
             (exercises: Exercise[]) => {
                 this.dataSource.data = exercises;
             }
         )
         this.trainingService.getDataFromDatabase();
-        console.log(this.trainingService.exercises);
     }
 
     //execute after view rendering and initilazing

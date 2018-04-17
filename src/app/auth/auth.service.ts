@@ -5,6 +5,7 @@ import { Subject } from 'rxjs/Subject';
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
+import { UIService } from'../shared/ui.service';
 import 'rxjs/add/operator/toPromise';
 
 //inject route service
@@ -18,9 +19,14 @@ export class AuthService {
     authChange = new Subject<boolean>();
     private user: User;
 
-    constructor(private router: Router, private http: HttpClient) {}
+    constructor(
+        private router: Router,
+        private http: HttpClient,
+        private uiService: UIService
+    ) {}
 
     registerUser(authData: AuthData) {
+        this.uiService.loadingStateChanged.next(true);
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
@@ -38,15 +44,17 @@ export class AuthService {
             httpOptions
         ).toPromise()
         .then(result => {
-            console.log(result.token);
+            this.uiService.loadingStateChanged.next(false);
             this.authSuccessfully(result.token);
         })
         .catch(error => {
-            console.log(error);
+            this.uiService.loadingStateChanged.next(false);
+            this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
         });
     }
 
     login(authData: AuthData) {
+        this.uiService.loadingStateChanged.next(true);
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
@@ -63,11 +71,12 @@ export class AuthService {
             httpOptions
         ).toPromise()
         .then(result => {
-            console.log(result.token);
+            this.uiService.loadingStateChanged.next(false);
             this.authSuccessfully(result.token);
         })
         .catch(error => {
-            console.log(error);
+            this.uiService.loadingStateChanged.next(false);
+            this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
         });
     }
 

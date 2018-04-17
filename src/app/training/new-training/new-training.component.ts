@@ -13,6 +13,7 @@ export class NewTrainingComponent implements OnInit {
     constructor( private trainingService: TrainingService) { }
 
     ngOnInit() {
+        console.log('new');
         this.exercises = this.trainingService.getAvailableExercises();
     }
 
