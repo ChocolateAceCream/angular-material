@@ -2,6 +2,7 @@ import { Exercise } from './exercise.model';
 import { Subject } from'rxjs/Subject';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
+import { UIService } from'../shared/ui.service';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -26,7 +27,10 @@ export class TrainingService {
     //store the completed exercise
     exercises: Exercise[] = [];
 
-    constructor(private http: HttpClient){}
+    constructor(
+        private http: HttpClient,
+        private uiService: UIService
+    ){}
 
     ngOnInit() {
         this.getDataFromDatabase();
@@ -73,6 +77,7 @@ export class TrainingService {
     }
 
     private addDataToDatabase(exercise: Exercise) {
+        this.uiService.loadingStateChanged.next(true);
         this.token = localStorage.getItem('accessToken');
         const httpOptions = {
             headers: new HttpHeaders({
@@ -86,12 +91,23 @@ export class TrainingService {
             exercise,
             httpOptions
         ).toPromise()
-        .catch(error => {
-            console.log(error);
-        });
+            .then(result => {
+                this.uiService.loadingStateChanged.next(false);
+            })
+            .catch(error => {
+                if (error.status === 401)
+                {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
+                } else {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
+                }
+            });
     }
 
     getDataFromDatabase() {
+        this.uiService.loadingStateChanged.next(true);
         this.token = localStorage.getItem('accessToken');
         const httpOptions = {
             headers: new HttpHeaders({
@@ -104,12 +120,19 @@ export class TrainingService {
             `http://192.168.1.11:3000/exercises/index.json`,
             httpOptions
         ).toPromise()
-        .then((result: Exercise[]) => {
-            this.finishedExercisesChanged.next(result);
-            this.exercises = result;
-        })
-        .catch(error => {
-            console.log(error);
-        });
+            .then((result: Exercise[]) => {
+                this.finishedExercisesChanged.next(result);
+                this.exercises = result;
+            }).catch(error => {
+                if (error.status === 401)
+                {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
+                } else {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
+                }
+            });
+
     }
 }

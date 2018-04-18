@@ -43,14 +43,20 @@ export class AuthService {
             this.user,
             httpOptions
         ).toPromise()
-        .then(result => {
-            this.uiService.loadingStateChanged.next(false);
-            this.authSuccessfully(result.token);
-        })
-        .catch(error => {
-            this.uiService.loadingStateChanged.next(false);
-            this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
-        });
+            .then(result => {
+                this.uiService.loadingStateChanged.next(false);
+                this.authSuccessfully(result.token);
+            })
+            .catch(error => {
+                if (error.status === 401)
+                {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
+                } else {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
+                }
+            });
     }
 
     login(authData: AuthData) {
@@ -70,14 +76,20 @@ export class AuthService {
             this.user,
             httpOptions
         ).toPromise()
-        .then(result => {
-            this.uiService.loadingStateChanged.next(false);
-            this.authSuccessfully(result.token);
-        })
-        .catch(error => {
-            this.uiService.loadingStateChanged.next(false);
-            this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
-        });
+            .then(result => {
+                this.uiService.loadingStateChanged.next(false);
+                this.authSuccessfully(result.token);
+            })
+            .catch(error => {
+                if (error.status === 401)
+                {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
+                } else {
+                    this.uiService.loadingStateChanged.next(false);
+                    this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
+                }
+            });
     }
 
     logout() {
