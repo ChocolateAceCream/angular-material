@@ -7,6 +7,8 @@ import { AuthData } from './auth-data.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UIService } from'../shared/ui.service';
 import 'rxjs/add/operator/toPromise';
+import { Store } from '@ngrx/store';
+import * as fromApp from '../app.reducer'; //it's convincion to name store related file lowercase'
 
 //inject route service
 
@@ -22,11 +24,13 @@ export class AuthService {
     constructor(
         private router: Router,
         private http: HttpClient,
-        private uiService: UIService
+        private uiService: UIService,
+        private store: Store<{ui: fromApp.State}>
     ) {}
 
     registerUser(authData: AuthData) {
-        this.uiService.loadingStateChanged.next(true);
+        //this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch({type: 'START_LOADING'});
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
@@ -44,23 +48,25 @@ export class AuthService {
             httpOptions
         ).toPromise()
             .then(result => {
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch({type: 'STOP_LOADING'});
                 this.authSuccessfully(result.token);
             })
             .catch(error => {
+                this.store.dispatch({type: 'STOP_LOADING'});
+
+                //this.uiService.loadingStateChanged.next(false);
                 if (error.status === 401)
                 {
-                    this.uiService.loadingStateChanged.next(false);
                     this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
                 } else {
-                    this.uiService.loadingStateChanged.next(false);
                     this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
                 }
             });
     }
 
     login(authData: AuthData) {
-        this.uiService.loadingStateChanged.next(true);
+        //this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch({type: 'START_LOADING'});
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
@@ -77,16 +83,18 @@ export class AuthService {
             httpOptions
         ).toPromise()
             .then(result => {
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch({type: 'STOP_LOADING'});
+                //this.uiService.loadingStateChanged.next(false);
                 this.authSuccessfully(result.token);
             })
             .catch(error => {
+                this.store.dispatch({type: 'STOP_LOADING'});
                 if (error.status === 401)
                 {
-                    this.uiService.loadingStateChanged.next(false);
+                    // this.uiService.loadingStateChanged.next(false);
                     this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
                 } else {
-                    this.uiService.loadingStateChanged.next(false);
+                    // this.uiService.loadingStateChanged.next(false);
                     this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
                 }
             });

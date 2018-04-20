@@ -21,6 +21,8 @@ import { AuthService } from './auth/auth.service';
 import { TrainingService } from './training/training.service';
 import { HttpClientModule } from '@angular/common/http';
 import { UIService } from './shared/ui.service';
+import { StoreModule } from '@ngrx/store';
+import { appReducer } from './app.reducer';
 
 @NgModule({
     declarations: [
@@ -44,7 +46,8 @@ import { UIService } from './shared/ui.service';
         AppRoutingModule,
         FormsModule,
         HttpClientModule,
-        ReactiveFormsModule
+        ReactiveFormsModule,
+        StoreModule.forRoot({ui: appReducer})
 
     ],
     providers: [AuthService, TrainingService, UIService],
