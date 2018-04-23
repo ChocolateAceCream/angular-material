@@ -8,7 +8,8 @@ import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { UIService } from'../shared/ui.service';
 import 'rxjs/add/operator/toPromise';
 import { Store } from '@ngrx/store';
-import * as fromApp from '../app.reducer'; //it's convincion to name store related file lowercase'
+import * as fromRoot from '../app.reducer'; //it's convincion to name store related file lowercase'
+import * as UI from '../shared/ui.actions';
 
 //inject route service
 
@@ -25,12 +26,12 @@ export class AuthService {
         private router: Router,
         private http: HttpClient,
         private uiService: UIService,
-        private store: Store<{ui: fromApp.State}>
+        private store: Store<fromRoot.State>
     ) {}
 
     registerUser(authData: AuthData) {
         //this.uiService.loadingStateChanged.next(true);
-        this.store.dispatch({type: 'START_LOADING'});
+        this.store.dispatch(new UI.StartLoading());
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
@@ -48,11 +49,11 @@ export class AuthService {
             httpOptions
         ).toPromise()
             .then(result => {
-                this.store.dispatch({type: 'STOP_LOADING'});
+                this.store.dispatch(new UI.StopLoading());
                 this.authSuccessfully(result.token);
             })
             .catch(error => {
-                this.store.dispatch({type: 'STOP_LOADING'});
+                this.store.dispatch(new UI.StopLoading());
 
                 //this.uiService.loadingStateChanged.next(false);
                 if (error.status === 401)
@@ -66,7 +67,7 @@ export class AuthService {
 
     login(authData: AuthData) {
         //this.uiService.loadingStateChanged.next(true);
-        this.store.dispatch({type: 'START_LOADING'});
+        this.store.dispatch(new UI.StartLoading());
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
@@ -83,12 +84,12 @@ export class AuthService {
             httpOptions
         ).toPromise()
             .then(result => {
-                this.store.dispatch({type: 'STOP_LOADING'});
+                this.store.dispatch(new UI.StopLoading());
                 //this.uiService.loadingStateChanged.next(false);
                 this.authSuccessfully(result.token);
             })
             .catch(error => {
-                this.store.dispatch({type: 'STOP_LOADING'});
+                this.store.dispatch(new UI.StopLoading());
                 if (error.status === 401)
                 {
                     // this.uiService.loadingStateChanged.next(false);

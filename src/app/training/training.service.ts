@@ -3,6 +3,9 @@ import { Subject } from'rxjs/Subject';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { UIService } from'../shared/ui.service';
+import { Store } from '@ngrx/store';
+import * as fromRoot from '../app.reducer'; //it's convincion to name store related file lowercase'
+import * as UI from '../shared/ui.actions';
 
 import 'rxjs/add/operator/toPromise';
 
@@ -29,7 +32,8 @@ export class TrainingService {
 
     constructor(
         private http: HttpClient,
-        private uiService: UIService
+        private uiService: UIService,
+        private store: Store<fromRoot.State>
     ){}
 
     ngOnInit() {
@@ -77,7 +81,7 @@ export class TrainingService {
     }
 
     private addDataToDatabase(exercise: Exercise) {
-        this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch(new UI.StartLoading());
         this.token = localStorage.getItem('accessToken');
         const httpOptions = {
             headers: new HttpHeaders({
@@ -92,22 +96,21 @@ export class TrainingService {
             httpOptions
         ).toPromise()
             .then(result => {
-                this.uiService.loadingStateChanged.next(false);
+                this.store.dispatch(new UI.StopLoading());
             })
             .catch(error => {
+                this.store.dispatch(new UI.StopLoading());
                 if (error.status === 401)
                 {
-                    this.uiService.loadingStateChanged.next(false);
                     this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
                 } else {
-                    this.uiService.loadingStateChanged.next(false);
                     this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
                 }
             });
     }
 
     getDataFromDatabase() {
-        this.uiService.loadingStateChanged.next(true);
+        this.store.dispatch(new UI.StartLoading());
         this.token = localStorage.getItem('accessToken');
         const httpOptions = {
             headers: new HttpHeaders({
@@ -126,10 +129,10 @@ export class TrainingService {
             }).catch(error => {
                 if (error.status === 401)
                 {
-                    this.uiService.loadingStateChanged.next(false);
+                    this.store.dispatch(new UI.StopLoading());
                     this.uiService.showSnackbar(error.error.errors[0].detail,null,3000);
                 } else {
-                    this.uiService.loadingStateChanged.next(false);
+                    this.store.dispatch(new UI.StopLoading());
                     this.uiService.showSnackbar('server not reachable, please retry later',null,3000);
                 }
             });
