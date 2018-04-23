@@ -81,7 +81,6 @@ export class TrainingService {
     }
 
     private addDataToDatabase(exercise: Exercise) {
-        this.store.dispatch(new UI.StartLoading());
         this.token = localStorage.getItem('accessToken');
         const httpOptions = {
             headers: new HttpHeaders({
@@ -124,6 +123,7 @@ export class TrainingService {
             httpOptions
         ).toPromise()
             .then((result: Exercise[]) => {
+                this.store.dispatch(new UI.StopLoading());
                 this.finishedExercisesChanged.next(result);
                 this.exercises = result;
             }).catch(error => {
