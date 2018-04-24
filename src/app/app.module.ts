@@ -24,6 +24,9 @@ import { UIService } from './shared/ui.service';
 import { StoreModule } from '@ngrx/store';
 import { reducers } from './app.reducer';
 
+import { StoreDevtoolsModule } from '@ngrx/store-devtools';
+import { environment } from '../environments/environment';
+
 @NgModule({
     declarations: [
         AppComponent,
@@ -36,7 +39,7 @@ import { reducers } from './app.reducer';
         WelcomeComponent,
         HeaderComponent,
         SidenavListComponent,
-        StopTrainingComponent
+        StopTrainingComponent,
     ],
     imports: [
         BrowserModule,
@@ -47,7 +50,8 @@ import { reducers } from './app.reducer';
         FormsModule,
         HttpClientModule,
         ReactiveFormsModule,
-        StoreModule.forRoot(reducers)
+        StoreModule.forRoot(reducers),
+        !environment.production ? StoreDevtoolsModule.instrument() : []
 
     ],
     providers: [AuthService, TrainingService, UIService],

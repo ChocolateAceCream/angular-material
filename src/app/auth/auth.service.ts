@@ -1,7 +1,7 @@
 //service provide in app.module.ts
 import { Injectable } from '@angular/core';
 import { Router } from '@angular/router';
-import { Subject } from 'rxjs/Subject';
+//import { Subject } from 'rxjs/Subject';
 import { User } from './user.model';
 import { AuthData } from './auth-data.model';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
@@ -10,6 +10,7 @@ import 'rxjs/add/operator/toPromise';
 import { Store } from '@ngrx/store';
 import * as fromRoot from '../app.reducer'; //it's convincion to name store related file lowercase'
 import * as UI from '../shared/ui.actions';
+import * as Auth from './auth.actions';
 
 //inject route service
 
@@ -19,7 +20,7 @@ interface AccessToken {
 @Injectable()
 
 export class AuthService {
-    authChange = new Subject<boolean>();
+    //authChange = new Subject<boolean>();
     private user: User;
 
     constructor(
@@ -103,7 +104,9 @@ export class AuthService {
 
     logout() {
         this.user = null;
-        this.authChange.next(false);
+        //now control by store
+        //this.authChange.next(false);
+        this.store.dispatch(new Auth.SetUnauthenticated())
         localStorage.removeItem('accessToken');
         this.router.navigate(['/login']);
     }
@@ -112,13 +115,14 @@ export class AuthService {
         return {...this.user};
     }
 
-    isAuth() {
-        return <string>localStorage.getItem('accessToken') != null;
-    }
+    //    isAuth() {
+    //        return <string>localStorage.getItem('accessToken') != null;
+    //    }
 
     private authSuccessfully(token: string) {
         localStorage.setItem('accessToken', token);
-        this.authChange.next(true);
+        this.store.dispatch(new Auth.SetAuthenticated())
+        //this.authChange.next(true);
         this.router.navigate(['/training']);
     }
 }

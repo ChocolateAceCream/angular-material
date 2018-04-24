@@ -3,14 +3,17 @@
 //used to map all reduceres to state slice
 import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromUi from './shared/ui.reducer';
+import * as fromAuth from './auth/auth.reducer';
 
 //we should have a reducer per state slice
 export interface State {
-    ui: fromUi.State
+    ui: fromUi.State;
+    auth: fromAuth.State;
 }
 
 export const reducers: ActionReducerMap<State> = {
-    ui: fromUi.uiReducer
+    ui: fromUi.uiReducer,
+    auth: fromAuth.authReducer
 };
 
 //utility function to pull info from state, for e.g. this following function
@@ -29,3 +32,7 @@ export const getUiState = createFeatureSelector<fromUi.State>('ui');
 //getisLoaindg is triggered. Now we are able to extract isLoaindg property from
 //the state.
 export const getIsLoading = createSelector(getUiState, fromUi.getIsLoading);
+
+//auth selecor
+export const getAuthState = createFeatureSelector<fromAuth.State>('auth');
+export const getIsAuth = createSelector(getAuthState, fromAuth.getIsAuth);
