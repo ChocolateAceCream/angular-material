@@ -106,7 +106,7 @@ export class AuthService {
         this.user = null;
         //now control by store
         //this.authChange.next(false);
-        this.store.dispatch(new Auth.SetUnauthenticated())
+        this.store.dispatch(new Auth.SetUnauthenticated());
         localStorage.removeItem('accessToken');
         this.router.navigate(['/login']);
     }
@@ -121,7 +121,7 @@ export class AuthService {
 
     private authSuccessfully(token: string) {
         localStorage.setItem('accessToken', token);
-        this.store.dispatch(new Auth.SetAuthenticated())
+        this.store.dispatch(new Auth.SetAuthenticated());
         //this.authChange.next(true);
         this.router.navigate(['/training']);
     }
