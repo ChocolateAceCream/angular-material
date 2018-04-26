@@ -4,16 +4,19 @@
 import { ActionReducerMap, createFeatureSelector, createSelector } from '@ngrx/store';
 import * as fromUi from './shared/ui.reducer';
 import * as fromAuth from './auth/auth.reducer';
+import * as fromTraining from './training/training.reducer';
 
 //we should have a reducer per state slice
 export interface State {
     ui: fromUi.State;
     auth: fromAuth.State;
+    training: fromTraining.State;
 }
 
 export const reducers: ActionReducerMap<State> = {
     ui: fromUi.uiReducer,
-    auth: fromAuth.authReducer
+    auth: fromAuth.authReducer,
+    training: fromTraining.trainingReducer
 };
 
 //utility function to pull info from state, for e.g. this following function
@@ -37,3 +40,8 @@ export const getIsLoading = createSelector(getUiState, fromUi.getIsLoading);
 export const getAuthState = createFeatureSelector<fromAuth.State>('auth');
 export const getIsAuth = createSelector(getAuthState, fromAuth.getIsAuth);
 export const getToken = createSelector(getAuthState, fromAuth.getToken);
+
+//training selector
+export const getTrainingState = createFeatureSelector<fromTraining.State>('training');
+export const getFinishedExercises = createSelector(getTrainingState, fromTraining.getFinishedExercises);
+export const getActiveTraining = createSelector(getTrainingState, fromTraining.getActiveTraining);
