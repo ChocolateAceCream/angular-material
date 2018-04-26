@@ -1,19 +1,22 @@
 import { Exercise } from './exercise.model';
 import { Subject } from'rxjs/Subject';
+import { Observable } from 'rxjs';
 import { HttpClient, HttpHeaders } from '@angular/common/http';
 import { Injectable, OnInit } from '@angular/core';
 import { UIService } from'../shared/ui.service';
 import { Store } from '@ngrx/store';
+import { take } from 'rxjs/operators';
+
 import * as fromRoot from '../app.reducer'; //it's convincion to name store related file lowercase'
 import * as UI from '../shared/ui.actions';
-
+import * as Auth from '../auth/auth.actions';
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class TrainingService {
     exerciseChanged = new Subject<Exercise>();
     finishedExercisesChanged = new Subject<Exercise[]>();
-    token: string;
+    token$: string = '';
     //this subject will hold a payload type of Exercise
     private availableExercises: Exercise[] = [
         { id: 'crunches', name: 'Crunches', duration: 30, calories: 8},
@@ -81,12 +84,14 @@ export class TrainingService {
     }
 
     private addDataToDatabase(exercise: Exercise) {
-        this.token = localStorage.getItem('accessToken');
+        this.store.select(fromRoot.getToken).pipe(take(1)).subscribe( token => {
+            this.token$ = token;
+        });
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin':'*',
-                'Authorization': `Bearer ${this.token}`
+                'Authorization': `Bearer ${this.token$}`
             })
         };
         this.http.post(
@@ -109,13 +114,15 @@ export class TrainingService {
     }
 
     getDataFromDatabase() {
+        this.store.select(fromRoot.getToken).pipe(take(1)).subscribe( token => {
+            this.token$ = token;
+        });
         this.store.dispatch(new UI.StartLoading());
-        this.token = localStorage.getItem('accessToken');
         const httpOptions = {
             headers: new HttpHeaders({
                 'Content-Type': 'application/json',
                 'Access-Control-Allow-Origin':'*',
-                'Authorization': `Bearer ${this.token}`
+                'Authorization': `Bearer ${this.token$}`
             })
         };
         this.http.get<Exercise[]>(

@@ -41,14 +41,16 @@ export class LoginComponent implements OnInit {
         //});
         this.loginForm = new FormGroup({
             email: new FormControl('', {validators: [Validators.required, Validators.email]}),
-            password: new FormControl('', {validators: [Validators.required]})
+            password: new FormControl('', {validators: [Validators.required]}),
+            remember: new FormControl(false)
         })
     }
 
     onSubmit() {
         this.authService.login({
             email: this.loginForm.value.email,
-            password: this.loginForm.value.password
+            password: this.loginForm.value.password,
+            remember: this.loginForm.value.remember
         });
     }
 

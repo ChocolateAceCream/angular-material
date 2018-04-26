@@ -22,6 +22,7 @@ interface AccessToken {
 export class AuthService {
     //authChange = new Subject<boolean>();
     private user: User;
+    private rememberMe: boolean;
 
     constructor(
         private router: Router,
@@ -44,6 +45,9 @@ export class AuthService {
             email: authData.email,
             password: authData.password
         };
+
+        this.rememberMe = authData.remember;
+
         this.http.post<AccessToken>(
             `http://192.168.1.11:3000/signup.json`,
             this.user,
@@ -79,6 +83,7 @@ export class AuthService {
             email: authData.email,
             password: authData.password
         };
+        this.rememberMe = authData.remember;
         this.http.post<AccessToken>(
             `http://192.168.1.11:3000/login.json`,
             this.user,
@@ -107,6 +112,7 @@ export class AuthService {
         //now control by store
         //this.authChange.next(false);
         this.store.dispatch(new Auth.SetUnauthenticated());
+        this.store.dispatch(new Auth.UnsetToken());
         localStorage.removeItem('accessToken');
         this.router.navigate(['/login']);
     }
@@ -120,7 +126,11 @@ export class AuthService {
     //    }
 
     private authSuccessfully(token: string) {
-        localStorage.setItem('accessToken', token);
+        if (this.rememberMe){
+            localStorage.setItem('accessToken', token);
+        }
+
+        this.store.dispatch(new Auth.SetToken(token));
         this.store.dispatch(new Auth.SetAuthenticated());
         //this.authChange.next(true);
         this.router.navigate(['/training']);

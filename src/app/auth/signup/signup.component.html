@@ -42,6 +42,9 @@
             <mat-datepicker-toggle matSuffix [for]="picker" ></mat-datepicker-toggle>
             <mat-datepicker #picker></mat-datepicker>
         </mat-form-field>
+
+        <div >
+        <div fxLayoutGap="10px" fxLayoutAlign = "start center">
         <mat-checkbox
             labelPosition="after"
             required
@@ -49,6 +52,17 @@
             >
             Agree to Terms and Conditions.
         </mat-checkbox>
+
+        </div>
+        <div fxLayoutGap="10px" fxLayoutAlign = "start center">
+        <mat-checkbox
+            labelPosition="after"
+            ngModel name="remember"
+            >
+            Remember me
+        </mat-checkbox>
+        </div>
+        </div>
         <button *ngIf="!(isLoading$ | async)" [disabled]="f.invalid" color="primary" mat-raised-button type="submit">Submit</button>
         <mat-spinner *ngIf="isLoading$ | async"></mat-spinner>
     </form>

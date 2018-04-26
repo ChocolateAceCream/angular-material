@@ -7,6 +7,7 @@ import { Injectable } from '@angular/core';
 
 @Injectable()
 export class AuthGuard implements CanActivate {
+    isAuth$: boolean;
     constructor(
         private store: Store<fromRoot.State>,
         private router: Router
@@ -17,7 +18,14 @@ export class AuthGuard implements CanActivate {
         //since the value of observable changes, but router guard only run once,
         //so we append take(1) method to run the guard every time when value
         //change happened
-        return this.store.select(fromRoot.getIsAuth).pipe(take(1));
+        this.store.select(fromRoot.getIsAuth).pipe(take(1)).subscribe((isAuth: boolean) => {
+            this.isAuth$ = isAuth;
+        });
+        if (this.isAuth$) {
+            return true;
+        } else {
+            this.router.navigate(['/login']);
+        }
 
         //    //must return a boolean or promise or observable
         //    if(this.authService.isAuth()) {
