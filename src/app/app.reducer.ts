@@ -43,5 +43,23 @@ export const getToken = createSelector(getAuthState, fromAuth.getToken);
 
 //training selector
 export const getTrainingState = createFeatureSelector<fromTraining.State>('training');
-export const getFinishedExercises = createSelector(getTrainingState, fromTraining.getFinishedExercises);
-export const getActiveTraining = createSelector(getTrainingState, fromTraining.getActiveTraining);
+
+export const getFinishedExercises = createSelector(
+    getTrainingState,
+    fromTraining.getFinishedExercises
+);
+
+export const getActiveTraining = createSelector(
+    getTrainingState,
+    fromTraining.getActiveTraining
+);
+
+export const getAvailableExercises = createSelector(
+    getTrainingState,
+    fromTraining.getAvailableExercises
+);
+
+export const getIsTraining = createSelector(
+    getTrainingState,
+    fromTraining.getIsTraining
+);

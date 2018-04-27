@@ -49,7 +49,7 @@ export class AuthService {
         this.rememberMe = authData.remember;
 
         this.http.post<AccessToken>(
-            `http://192.168.1.11:3000/signup.json`,
+            `http://69.113.182.79:3000/signup.json`,
             this.user,
             httpOptions
         ).toPromise()
@@ -85,7 +85,7 @@ export class AuthService {
         };
         this.rememberMe = authData.remember;
         this.http.post<AccessToken>(
-            `http://192.168.1.11:3000/login.json`,
+            `http://69.113.182.79:3000/login.json`,
             this.user,
             httpOptions
         ).toPromise()

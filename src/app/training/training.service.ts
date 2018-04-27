@@ -10,25 +10,21 @@ import { take } from 'rxjs/operators';
 import * as fromRoot from '../app.reducer'; //it's convincion to name store related file lowercase'
 import * as UI from '../shared/ui.actions';
 import * as Auth from '../auth/auth.actions';
+import * as Training from './training.actions';
 import 'rxjs/add/operator/toPromise';
 
 @Injectable()
 export class TrainingService {
-    exerciseChanged = new Subject<Exercise>();
-    finishedExercisesChanged = new Subject<Exercise[]>();
+    //exerciseChanged = new Subject<Exercise>();
+    //finishedExercisesChanged = new Subject<Exercise[]>();
     token$: string = '';
     //this subject will hold a payload type of Exercise
-    private availableExercises: Exercise[] = [
-        { id: 'crunches', name: 'Crunches', duration: 30, calories: 8},
-        { id: 'touch-toes', name: 'Touch Toes', duration: 180, calories: 128},
-        { id: 'side-lunges', name: 'Side Lunges', duration: 120, calories: 228},
-        { id: 'burpees', name: 'Brupees', duration: 60, calories: 348},
-    ];
+    private availableExercises$: Exercise[];
 
     //by turnning availableExercises into private array and add a method to
     //return a slice of it(copy of it), now we can edit it without changing the
     //origional array
-    private runningExercise: Exercise;
+    //private runningExercise: Exercise;
 
     //store the completed exercise
     exercises: Exercise[] = [];
@@ -44,44 +40,56 @@ export class TrainingService {
     }
 
     getAvailableExercises() {
-        return this.availableExercises.slice();
+        this.store.select(fromRoot.getAvailableExercises).pipe(take(1)).subscribe( ex => {
+            this.availableExercises$ = ex;
+        });
+        return this.availableExercises$.slice();
     }
 
     startExercise(selectedId: string) {
-        this.runningExercise = this.availableExercises.find(ex => ex.id === selectedId);
-        this.exerciseChanged.next({...this.runningExercise});
+        //    this.runningExercise = this.availableExercises$.find(ex => ex.id === selectedId);
+        //    this.exerciseChanged.next({...this.runningExercise});
+        this.store.dispatch(new Training.StartTraining(selectedId));
     }
 
     completeExercise() {
-        this.addDataToDatabase({
-            ...this.runningExercise,
-            date: new Date(),
-            state : "completed"
+        this.store.select(fromRoot.getActiveTraining).pipe(take(1)).subscribe( ex => {
+            this.addDataToDatabase({
+                ...ex,
+                date: new Date(),
+                state : "completed"
+            });
+            this.store.dispatch(new Training.StopTraining);
         });
-        this.runningExercise = null;
-        this.exerciseChanged.next(null);
+        //
+        //this.runningExercise = null;
+        //this.exerciseChanged.next(null);
     }
 
     cancelExercise(progress: number) {
-        this.addDataToDatabase({
-            ...this.runningExercise,
-            duration: this.runningExercise.duration * (progress / 100),
-            calories: this.runningExercise.calories * (progress / 100),
-            date: new Date(),
-            state : "cancelled"
+        this.store.select(fromRoot.getActiveTraining).pipe(take(1)).subscribe( ex => {
+            this.addDataToDatabase({
+                ...ex,
+                duration: ex.duration * (progress / 100),
+                calories: ex.calories * (progress / 100),
+                date: new Date(),
+                state : "cancelled"
+            });
+            this.store.dispatch(new Training.StopTraining);
         });
-        this.runningExercise = null;
-        this.exerciseChanged.next(null);
+
+        //this.runningExercise = null;
+        //this.exerciseChanged.next(null);
     }
 
     //return a copy of current running exercise
-    getRunningExercise() {
-        return {...this.runningExercise};
-    }
+    // getRunningExercise() {
+    //     return {...this.runningExercise};
+    // }
 
-    getCompletedOrCancelledExercises() {
-        return this.exercises.slice();
-    }
+    //getCompletedOrCancelledExercises() {
+    //    return this.exercises.slice();
+    //}
 
     private addDataToDatabase(exercise: Exercise) {
         this.store.select(fromRoot.getToken).pipe(take(1)).subscribe( token => {
@@ -95,7 +103,7 @@ export class TrainingService {
             })
         };
         this.http.post(
-            `http://192.168.1.11:3000/exercises/create.json`,
+            `http://69.113.182.79:3000/exercises/create.json`,
             exercise,
             httpOptions
         ).toPromise()
@@ -126,12 +134,12 @@ export class TrainingService {
             })
         };
         this.http.get<Exercise[]>(
-            `http://192.168.1.11:3000/exercises/index.json`,
+            `http://69.113.182.79:3000/exercises/index.json`,
             httpOptions
         ).toPromise()
             .then((result: Exercise[]) => {
                 this.store.dispatch(new UI.StopLoading());
-                this.finishedExercisesChanged.next(result);
+                this.store.dispatch(new Training.SetFinishedTraining(result));
                 this.exercises = result;
             }).catch(error => {
                 if (error.status === 401)

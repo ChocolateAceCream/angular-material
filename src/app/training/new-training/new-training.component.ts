@@ -13,7 +13,7 @@ import * as fromRoot from '../../app.reducer'; //it's convincion to name store r
     styleUrls: ['./new-training.component.css']
 })
 export class NewTrainingComponent implements OnInit {
-    exercises: Exercise[] = [];
+    exercises$: Observable<Exercise[]>;
     isLoading$: Observable<boolean>;
     constructor(
         private trainingService: TrainingService,
@@ -22,7 +22,8 @@ export class NewTrainingComponent implements OnInit {
 
     ngOnInit() {
         this.isLoading$ = this.store.select(fromRoot.getIsLoading);
-        this.exercises = this.trainingService.getAvailableExercises();
+        //this.exercises = this.trainingService.getAvailableExercises();
+        this.exercises$= this.store.select(fromRoot.getAvailableExercises);
     }
 
     onStartTraining(form: NgForm) {
