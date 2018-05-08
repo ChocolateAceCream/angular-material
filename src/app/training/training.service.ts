@@ -103,7 +103,8 @@ export class TrainingService {
             })
         };
         this.http.post(
-            `http://69.113.182.79:3000/exercises/create.json`,
+            `https://evening-retreat-93531.herokuapp.com/exercises/create.json`,
+            //`http://69.113.182.79:3000/exercises/create.json`,
             exercise,
             httpOptions
         ).toPromise()
@@ -134,7 +135,8 @@ export class TrainingService {
             })
         };
         this.http.get<Exercise[]>(
-            `http://69.113.182.79:3000/exercises/index.json`,
+            `https://evening-retreat-93531.herokuapp.com/exercises/index.json`,
+            //`http://69.113.182.79:3000/exercises/index.json`,
             httpOptions
         ).toPromise()
             .then((result: Exercise[]) => {
